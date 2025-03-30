@@ -1,4 +1,5 @@
 com\pgmadeeazy\model\Property.class
+com\pgmadeeazy\controller\AdminController.class
 com\pgmadeeazy\properties\CloudinaryProperties.class
 com\pgmadeeazy\service\exceptions\ImageUploadException.class
 com\pgmadeeazy\model\LoginResponse.class
@@ -8,6 +9,7 @@ com\pgmadeeazy\controller\AuthController.class
 com\pgmadeeazy\service\exceptions\PropertyServiceException.class
 com\pgmadeeazy\controller\PropertyController.class
 com\pgmadeeazy\service\exceptions\ImageDeleteException.class
+com\pgmadeeazy\service\EmailService.class
 com\pgmadeeazy\security\WebSecurityConfig.class
 com\pgmadeeazy\model\Admin.class
 com\pgmadeeazy\model\LoginRequest.class
@@ -26,6 +28,7 @@ com\pgmadeeazy\repository\AdminRepository.class
 com\pgmadeeazy\service\exceptions\PropertyNotFoundException.class
 com\pgmadeeazy\security\JWTUtil.class
 com\pgmadeeazy\service\PropertyService.class
+com\pgmadeeazy\controller\TestController.class
 com\pgmadeeazy\config\CorsConfig.class
 com\pgmadeeazy\repository\SeekerRepository.class
 com\pgmadeeazy\model\Seeker.class

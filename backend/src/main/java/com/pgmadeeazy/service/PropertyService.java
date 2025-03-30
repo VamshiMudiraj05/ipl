@@ -1,21 +1,24 @@
 package com.pgmadeeazy.service;
 
-import com.pgmadeeazy.model.Property;
-import com.pgmadeeazy.model.ApprovalStatus;
-import com.pgmadeeazy.repository.PropertyRepository;
-import com.pgmadeeazy.utils.CloudinaryUtils;
-import com.pgmadeeazy.service.exceptions.PropertyNotFoundException;
-import com.pgmadeeazy.service.exceptions.ImageUploadException;
-import com.pgmadeeazy.service.exceptions.ImageDeleteException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.Date;
+import com.pgmadeeazy.model.ApprovalStatus;
+import com.pgmadeeazy.model.Property;
+import com.pgmadeeazy.repository.PropertyRepository;
+import com.pgmadeeazy.service.exceptions.ImageDeleteException;
+import com.pgmadeeazy.service.exceptions.ImageUploadException;
+import com.pgmadeeazy.service.exceptions.PropertyNotFoundException;
+import com.pgmadeeazy.utils.CloudinaryUtils;
 
 @Service
 public class PropertyService {
@@ -24,6 +27,7 @@ public class PropertyService {
     private final CloudinaryUtils cloudinaryUtils;
     @Value("${property.maxImages:5}")
     private int maxImages;
+    private static final Logger logger = LoggerFactory.getLogger(PropertyService.class);
 
     @Autowired
     public PropertyService(PropertyRepository propertyRepository, CloudinaryUtils cloudinaryUtils) {
@@ -103,11 +107,23 @@ public class PropertyService {
     }
 
     public List<Property> getPendingProperties() {
-        return propertyRepository.findByApprovalStatus(ApprovalStatus.PENDING);
+        try {
+            logger.info("Service: Fetching pending properties");
+            List<Property> properties = propertyRepository.findByApprovalStatus(ApprovalStatus.PENDING);
+            logger.info("Service: Found {} pending properties", properties.size());
+            return properties;
+        } catch (Exception e) {
+            logger.error("Service: Error fetching pending properties", e);
+            throw e;
+        }
     }
 
     public List<Property> getApprovedProperties() {
         return propertyRepository.findByApprovalStatus(ApprovalStatus.APPROVED);
+    }
+
+    public List<Property> getRejectedProperties() {
+        return propertyRepository.findByApprovalStatus(ApprovalStatus.REJECTED);
     }
 
     public Property updateProperty(String id, Property property, List<MultipartFile> images) throws IOException, ImageUploadException, ImageDeleteException {
@@ -245,5 +261,13 @@ public class PropertyService {
         property.setLocationDetails(locationDetails);
         property.setUpdatedAt(new Date());
         propertyRepository.save(property);
+    }
+
+    public List<Property> getPropertiesByOwner(String ownerName) {
+        return propertyRepository.findByOwnerName(ownerName);
+    }
+
+    public List<Property> getPropertiesByOwnerEmail(String ownerEmail) {
+        return propertyRepository.findByOwnerEmail(ownerEmail);
     }
 }

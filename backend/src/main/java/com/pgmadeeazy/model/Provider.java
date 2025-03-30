@@ -1,10 +1,13 @@
 package com.pgmadeeazy.model;
 
-import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.validation.constraints.*;
-import java.util.List;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Document(collection = "providers")
 public class Provider {
@@ -53,41 +56,6 @@ public class Provider {
 
     @NotBlank(message = "Role is required")
     private String role = "provider"; // Default role for providers
-
-    @NotBlank(message = "PG name is required")
-    private String pgName;
-
-    @NotBlank(message = "PG address is required")
-    private String pgAddress;
-
-    @NotNull(message = "Number of available rooms is required")
-    private Integer availableRooms;
-
-    @NotNull(message = "Has single rooms is required")
-    private Boolean hasSingleRooms;
-
-    @NotNull(message = "Has shared rooms is required")
-    private Boolean hasSharedRooms;
-
-    @NotNull(message = "Minimum rent is required")
-    private Integer rentMin;
-
-    @NotNull(message = "Maximum rent is required")
-    private Integer rentMax;
-
-    @NotBlank(message = "Preferred tenants is required")
-    private String preferredTenants;
-
-    @NotNull(message = "Security deposit amount is required")
-    private Integer depositAmount;
-
-    @NotNull(message = "Notice period is required")
-    private String noticePeriod;
-
-    @NotNull(message = "House rules are required")
-    private List<String> houseRules;
-
-    private String additionalRules;
 
     @NotBlank(message = "User type is required")
     private String userType;
@@ -202,102 +170,6 @@ public class Provider {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public String getPgName() {
-        return pgName;
-    }
-
-    public void setPgName(String pgName) {
-        this.pgName = pgName;
-    }
-
-    public String getPgAddress() {
-        return pgAddress;
-    }
-
-    public void setPgAddress(String pgAddress) {
-        this.pgAddress = pgAddress;
-    }
-
-    public Integer getAvailableRooms() {
-        return availableRooms;
-    }
-
-    public void setAvailableRooms(Integer availableRooms) {
-        this.availableRooms = availableRooms;
-    }
-
-    public Boolean getHasSingleRooms() {
-        return hasSingleRooms;
-    }
-
-    public void setHasSingleRooms(Boolean hasSingleRooms) {
-        this.hasSingleRooms = hasSingleRooms;
-    }
-
-    public Boolean getHasSharedRooms() {
-        return hasSharedRooms;
-    }
-
-    public void setHasSharedRooms(Boolean hasSharedRooms) {
-        this.hasSharedRooms = hasSharedRooms;
-    }
-
-    public Integer getRentMin() {
-        return rentMin;
-    }
-
-    public void setRentMin(Integer rentMin) {
-        this.rentMin = rentMin;
-    }
-
-    public Integer getRentMax() {
-        return rentMax;
-    }
-
-    public void setRentMax(Integer rentMax) {
-        this.rentMax = rentMax;
-    }
-
-    public String getPreferredTenants() {
-        return preferredTenants;
-    }
-
-    public void setPreferredTenants(String preferredTenants) {
-        this.preferredTenants = preferredTenants;
-    }
-
-    public Integer getDepositAmount() {
-        return depositAmount;
-    }
-
-    public void setDepositAmount(Integer depositAmount) {
-        this.depositAmount = depositAmount;
-    }
-
-    public String getNoticePeriod() {
-        return noticePeriod;
-    }
-
-    public void setNoticePeriod(String noticePeriod) {
-        this.noticePeriod = noticePeriod;
-    }
-
-    public List<String> getHouseRules() {
-        return houseRules;
-    }
-
-    public void setHouseRules(List<String> houseRules) {
-        this.houseRules = houseRules;
-    }
-
-    public String getAdditionalRules() {
-        return additionalRules;
-    }
-
-    public void setAdditionalRules(String additionalRules) {
-        this.additionalRules = additionalRules;
     }
 
     public String getUserType() {

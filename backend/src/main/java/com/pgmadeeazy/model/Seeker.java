@@ -1,10 +1,13 @@
 package com.pgmadeeazy.model;
 
-import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import jakarta.validation.constraints.*;
-import java.util.List;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Document(collection = "seekers")
 public class Seeker {
@@ -69,24 +72,6 @@ public class Seeker {
     private String officeAddress;
     private String workId;
     
-    @NotNull(message = "Budget minimum is required")
-    private Integer budgetMin;
-    
-    @NotNull(message = "Budget maximum is required")
-    private Integer budgetMax;
-    
-    @NotBlank(message = "Room type is required")
-    private String roomType;
-    
-    @NotBlank(message = "Gender preference is required")
-    private String genderPreference;
-    
-    @NotBlank(message = "Food preference is required")
-    private String foodPreference;
-    
-    @NotNull(message = "Amenities are required")
-    private List<String> amenities;
-
     @NotBlank(message = "User type is required")
     private String userType;
 
@@ -296,54 +281,6 @@ public class Seeker {
 
     public void setWorkId(String workId) {
         this.workId = workId;
-    }
-
-    public Integer getBudgetMin() {
-        return budgetMin;
-    }
-
-    public void setBudgetMin(Integer budgetMin) {
-        this.budgetMin = budgetMin;
-    }
-
-    public Integer getBudgetMax() {
-        return budgetMax;
-    }
-
-    public void setBudgetMax(Integer budgetMax) {
-        this.budgetMax = budgetMax;
-    }
-
-    public String getRoomType() {
-        return roomType;
-    }
-
-    public void setRoomType(String roomType) {
-        this.roomType = roomType;
-    }
-
-    public String getGenderPreference() {
-        return genderPreference;
-    }
-
-    public void setGenderPreference(String genderPreference) {
-        this.genderPreference = genderPreference;
-    }
-
-    public String getFoodPreference() {
-        return foodPreference;
-    }
-
-    public void setFoodPreference(String foodPreference) {
-        this.foodPreference = foodPreference;
-    }
-
-    public List<String> getAmenities() {
-        return amenities;
-    }
-
-    public void setAmenities(List<String> amenities) {
-        this.amenities = amenities;
     }
 
     public String getUserType() {

@@ -5,6 +5,11 @@ import { useAuth } from '../../context/AuthContext';
 export default function Header() {
   const { user, logout } = useAuth();
 
+  // Helper function to get user type without ROLE_ prefix
+  const getUserType = (userType) => {
+    return userType?.replace('ROLE_', '').toLowerCase();
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-orange-600 bg-black/90 backdrop-blur-lg shadow-md shadow-orange-600/20">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -23,10 +28,20 @@ export default function Header() {
         <div className="flex-grow hidden md:flex justify-center gap-6">
           {user ? (
             <NavLink
-              to={user.userType === 'seeker' ? '/seeker-dashboard' : '/provider-dashboard'}
+              to={
+                getUserType(user.userType) === 'seeker' 
+                  ? '/seeker-dashboard' 
+                  : getUserType(user.userType) === 'provider'
+                  ? '/provider-dashboard'
+                  : '/admin-dashboard'
+              }
               className="text-orange-500 font-semibold hover:text-orange-600 transition-colors duration-300"
             >
-              {user.userType === 'seeker' ? 'Seeker Dashboard' : 'Provider Dashboard'}
+              {getUserType(user.userType) === 'seeker' 
+                ? 'Seeker Dashboard' 
+                : getUserType(user.userType) === 'provider'
+                ? 'Provider Dashboard'
+                : 'Admin Dashboard'}
             </NavLink>
           ) : (
             <>
@@ -57,12 +72,6 @@ export default function Header() {
           {user ? (
             <>
               <span className="text-gray-300">Welcome, {user.name}</span>
-              <NavLink
-                to={user.userType === 'seeker' ? '/seeker-dashboard' : '/provider-dashboard'}
-                className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors duration-300"
-              >
-                Dashboard
-              </NavLink>
               <button
                 onClick={logout}
                 className="px-4 py-2 bg-transparent border border-orange-500 text-orange-500 rounded-md hover:bg-orange-500 hover:text-white transition-colors duration-300"

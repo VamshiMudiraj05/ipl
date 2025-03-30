@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { propertyApi } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 
 const validationSchema = {
   basicInfo: {
@@ -60,13 +61,15 @@ const RULES_OPTIONS = [
 
 export default function AddProperty() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: '',
       buildingType: '',
       category: '',
-      ownerName: '',
+      ownerName: user?.name || '',
       ownerPhone: '',
+      ownerEmail: user?.email || '',
     },
     location: {
       city: '',
@@ -200,93 +203,44 @@ export default function AddProperty() {
         return;
       }
 
-      // Flatten the form data structure to match backend requirements
+      // Create FormData object
+      const submitData = new FormData();
+      
+      // Create property object
       const propertyData = {
-        name: formData.basicInfo.name.trim(),
+        name: formData.basicInfo.name,
         buildingType: formData.basicInfo.buildingType,
         category: formData.basicInfo.category,
-        ownerName: formData.basicInfo.ownerName.trim(),
-        ownerPhone: formData.basicInfo.ownerPhone.trim(),
-        city: formData.location.city.trim(),
-        area: formData.location.area.trim(),
-        address: formData.location.address.trim(),
-        pincode: formData.location.pincode.trim(),
+        ownerName: formData.basicInfo.ownerName,
+        ownerPhone: formData.basicInfo.ownerPhone,
+        ownerEmail: formData.basicInfo.ownerEmail,
+        city: formData.location.city,
+        area: formData.location.area,
+        address: formData.location.address,
+        pincode: formData.location.pincode,
         rooms: parseInt(formData.propertyDetails.rooms),
-        areaInSqft: parseFloat(formData.propertyDetails.area),
+        area: parseFloat(formData.propertyDetails.area),
         rent: parseFloat(formData.pricing.rent),
         deposit: parseFloat(formData.pricing.deposit),
-        description: formData.location.address.trim(),
-        locationDetails: formData.location.address.trim(),
         amenities: formData.amenities,
-        rules: formData.rules
+        rules: formData.rules,
       };
 
-      // Validate numeric fields
-      if (isNaN(propertyData.rooms) || propertyData.rooms <= 0) {
-        setErrors({
-          propertyDetails: {
-            rooms: 'Please enter a valid number of rooms'
-          }
-        });
-        setIsLoading(false);
-        return;
-      }
+      // Append property data as JSON string
+      submitData.append('property', JSON.stringify(propertyData));
 
-      if (isNaN(propertyData.areaInSqft) || propertyData.areaInSqft <= 0) {
-        setErrors({
-          propertyDetails: {
-            area: 'Please enter a valid area'
-          }
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      if (isNaN(propertyData.rent) || propertyData.rent <= 0) {
-        setErrors({
-          pricing: {
-            rent: 'Please enter a valid rent amount'
-          }
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      if (isNaN(propertyData.deposit) || propertyData.deposit <= 0) {
-        setErrors({
-          pricing: {
-            deposit: 'Please enter a valid deposit amount'
-          }
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Create FormData
-      const formDataToSend = new FormData();
-      
-      // Add property data as a single JSON string
-      formDataToSend.append('property', JSON.stringify(propertyData));
-
-      // Add images
+      // Append images if any
       if (selectedFiles.length > 0) {
-        selectedFiles.forEach(file => {
-          formDataToSend.append('images', file);
+        selectedFiles.forEach((file, index) => {
+          submitData.append('images', file);
         });
       }
 
-      // Log the data being sent
-      console.log('Sending property data:', propertyData);
-      console.log('Number of images:', selectedFiles.length);
-
-      // Use the propertyApi client
-      const response = await propertyApi.createProperty(formDataToSend);
-      console.log('Server response:', response);
-      
-      // Success handling
-      navigate('/provider-dashboard');
+      // Submit the form
+      await propertyApi.createProperty(submitData);
+      navigate('/provider-dashboard/properties');
     } catch (error) {
-      console.error('Error submitting property:', error);
+      console.error('Error creating property:', error);
       if (error.response?.data?.message) {
         setErrors({
           global: error.response.data.message
@@ -372,14 +326,25 @@ export default function AddProperty() {
                   className="w-full px-4 py-3 rounded-lg bg-black/50 border border-orange-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Owner Phone</label>
-                <input
-                  type="tel"
-                  value={formData.basicInfo.ownerPhone}
-                  onChange={(e) => handleInputChange(e, 'basicInfo', 'ownerPhone')}
-                  className="w-full px-4 py-3 rounded-lg bg-black/50 border border-orange-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Owner Phone</label>
+                  <input
+                    type="tel"
+                    value={formData.basicInfo.ownerPhone}
+                    onChange={(e) => handleInputChange(e, 'basicInfo', 'ownerPhone')}
+                    className="w-full px-4 py-3 rounded-lg bg-black/50 border border-orange-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Owner Email</label>
+                  <input
+                    type="email"
+                    value={formData.basicInfo.ownerEmail}
+                    readOnly
+                    className="w-full px-4 py-3 rounded-lg bg-black/30 border border-orange-600 text-gray-400 cursor-not-allowed"
+                  />
+                </div>
               </div>
             </div>
 

@@ -20,6 +20,7 @@ public class RegistrationService {
     private final SeekerRepository seekerRepository;
     private final ProviderRepository providerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public Seeker registerSeeker(@Valid Seeker seeker, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -36,7 +37,16 @@ public class RegistrationService {
 
         // Encode password before saving
         seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
-        return seekerRepository.save(seeker);
+        Seeker savedSeeker = seekerRepository.save(seeker);
+
+        // Send welcome email
+        emailService.sendRegistrationEmail(
+            savedSeeker.getEmail(),
+            savedSeeker.getFullName(),
+            "seeker"
+        );
+
+        return savedSeeker;
     }
 
     public Provider registerProvider(@Valid Provider provider, BindingResult bindingResult) {
@@ -55,7 +65,16 @@ public class RegistrationService {
 
         // Encode password before saving
         provider.setPassword(passwordEncoder.encode(provider.getPassword()));
-        return providerRepository.save(provider);
+        Provider savedProvider = providerRepository.save(provider);
+
+        // Send welcome email
+        emailService.sendRegistrationEmail(
+            savedProvider.getEmail(),
+            savedProvider.getFullName(),
+            "provider"
+        );
+
+        return savedProvider;
     }
 
     private String getValidationErrors(BindingResult bindingResult) {

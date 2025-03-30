@@ -13,11 +13,14 @@ C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\security\JwtRequ
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\model\Admin.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\model\Provider.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\service\PropertyService.java
+C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\controller\AdminController.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\model\LoginResponse.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\security\JwtAuthenticationFilter.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\config\CorsConfig.java
+C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\controller\TestController.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\model\ApprovalStatus.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\config\JwtConfig.java
+C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\service\EmailService.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\model\Seeker.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\properties\CloudinaryProperties.java
 C:\Users\vamsh\Desktop\IPL\backend\src\main\java\com\pgmadeeazy\repository\SeekerRepository.java

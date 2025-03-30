@@ -6,9 +6,15 @@ import SignInForm from '../features/auth/components/SignInForm';
 import ProtectedRoute from '../context/ProtectedRoute';
 import ProviderDashboard from '../features/provider/components/ProviderDashboard';
 import AddProperty from '../features/provider/components/AddProperty';
+import MyProperties from '../features/provider/components/MyProperties';
 import AdminDashboard from '../features/admin/components/AdminDashboard';
 import PropertyApproval from '../features/admin/components/PropertyApproval';
+import RejectedProperties from '../features/admin/components/RejectedProperties';
+import AvailableProperties from '../features/admin/components/AvailableProperties';
+import Providers from '../features/admin/components/Providers';
+import Seekers from '../features/admin/components/Seekers';
 import SeekerDashboard from '../features/explorer/pages/SeekerDashboard';
+import FindPG from '../features/seeker/components/FindPG';
 
 const AppRoutes = () => {
   return (
@@ -17,19 +23,73 @@ const AppRoutes = () => {
       <Route path="/register" element={<MultiStepRegistration />} />
       <Route path="/login" element={<SignInForm />} />
       
+      {/* Seeker Routes */}
       <Route path="/seeker-dashboard" element={
         <ProtectedRoute>
           <SeekerDashboard />
         </ProtectedRoute>
       } />
-      
-      <Route path="/provider-dashboard" element={
+
+      <Route path="/seeker-dashboard/find-pg" element={
         <ProtectedRoute>
-          <ProviderDashboard />
+          <FindPG />
         </ProtectedRoute>
       } />
 
-      <Route path="/provider-dashboard/*" element={
+      <Route path="/seeker-dashboard/bookings" element={
+        <ProtectedRoute>
+          <div className="min-h-screen bg-black">
+            <div className="container mx-auto px-4 py-8">
+              <div className="max-w-4xl mx-auto bg-black/80 p-8 rounded-xl shadow-xl border border-orange-600">
+                <h1 className="text-3xl font-bold text-white mb-6">My Bookings</h1>
+                {/* Add your bookings content here */}
+              </div>
+            </div>
+          </div>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/seeker-dashboard/saved-pgs" element={
+        <ProtectedRoute>
+          <div className="min-h-screen bg-black">
+            <div className="container mx-auto px-4 py-8">
+              <div className="max-w-4xl mx-auto bg-black/80 p-8 rounded-xl shadow-xl border border-orange-600">
+                <h1 className="text-3xl font-bold text-white mb-6">Saved PGs</h1>
+                {/* Add your saved PGs content here */}
+              </div>
+            </div>
+          </div>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/seeker-dashboard/profile" element={
+        <ProtectedRoute>
+          <div className="min-h-screen bg-black">
+            <div className="container mx-auto px-4 py-8">
+              <div className="max-w-4xl mx-auto bg-black/80 p-8 rounded-xl shadow-xl border border-orange-600">
+                <h1 className="text-3xl font-bold text-white mb-6">My Profile</h1>
+                {/* Add your profile content here */}
+              </div>
+            </div>
+          </div>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/seeker-dashboard/messages" element={
+        <ProtectedRoute>
+          <div className="min-h-screen bg-black">
+            <div className="container mx-auto px-4 py-8">
+              <div className="max-w-4xl mx-auto bg-black/80 p-8 rounded-xl shadow-xl border border-orange-600">
+                <h1 className="text-3xl font-bold text-white mb-6">Messages</h1>
+                {/* Add your messages content here */}
+              </div>
+            </div>
+          </div>
+        </ProtectedRoute>
+      } />
+
+      {/* Provider Routes */}
+      <Route path="/provider-dashboard" element={
         <ProtectedRoute>
           <ProviderDashboard />
         </ProtectedRoute>
@@ -41,13 +101,14 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
-      <Route path="/admin-dashboard" element={
+      <Route path="/provider-dashboard/properties" element={
         <ProtectedRoute>
-          <AdminDashboard />
+          <MyProperties />
         </ProtectedRoute>
       } />
 
-      <Route path="/admin-dashboard/*" element={
+      {/* Admin Routes */}
+      <Route path="/admin-dashboard" element={
         <ProtectedRoute>
           <AdminDashboard />
         </ProtectedRoute>
@@ -56,6 +117,30 @@ const AppRoutes = () => {
       <Route path="/admin-dashboard/approvals" element={
         <ProtectedRoute>
           <PropertyApproval />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin-dashboard/rejected-pgs" element={
+        <ProtectedRoute>
+          <RejectedProperties />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin-dashboard/available-pgs" element={
+        <ProtectedRoute>
+          <AvailableProperties />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin-dashboard/providers" element={
+        <ProtectedRoute>
+          <Providers />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin-dashboard/seekers" element={
+        <ProtectedRoute>
+          <Seekers />
         </ProtectedRoute>
       } />
       

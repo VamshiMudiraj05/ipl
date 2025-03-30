@@ -105,9 +105,120 @@ export const propertyApi = {
     }
   },
 
+  getRejectedProperties: async () => {
+    try {
+      const response = await api.get('/api/admin/properties/rejected');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching rejected properties:', error);
+      throw error;
+    }
+  },
+
   deleteProperty: async (id) => {
     try {
       await api.delete(`/api/properties/${id}`);
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  getPendingProperties: async () => {
+    try {
+      const response = await api.get('/api/properties/pending');
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  getApprovedProperties: async () => {
+    try {
+      const response = await api.get('/api/properties/approved');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching approved properties:', error);
+      throw handleApiError(error);
+    }
+  },
+
+  approveProperty: async (id, approvalNote) => {
+    try {
+      const formData = new FormData();
+      formData.append('approvalNote', approvalNote);
+      const response = await api.post(`/api/properties/${id}/approve`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  rejectProperty: async (id, rejectionReason) => {
+    try {
+      const formData = new FormData();
+      formData.append('rejectionReason', rejectionReason);
+      const response = await api.post(`/api/properties/${id}/reject`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  getPropertiesByOwner: async (ownerEmail) => {
+    try {
+      const response = await api.get(`/api/properties/owner/email/${encodeURIComponent(ownerEmail)}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching properties by owner:', error);
+      throw handleApiError(error);
+    }
+  }
+};
+
+// Admin API methods
+export const adminApi = {
+  getStats: async () => {
+    try {
+      console.log('Making API call to /api/admin/stats');
+      const response = await api.get('/api/admin/stats');
+      console.log('API response:', response);
+      if (!response.data) {
+        console.error('No data in API response');
+        throw new Error('No data in API response');
+      }
+      return response.data;
+    } catch (error) {
+      console.error('Error in adminApi.getStats:', error);
+      if (error.response) {
+        console.error('Server response:', error.response.data);
+        console.error('Status:', error.response.status);
+        console.error('Headers:', error.response.headers);
+      }
+      throw handleApiError(error);
+    }
+  },
+
+  getProviders: async () => {
+    try {
+      const response = await api.get('/api/admin/providers');
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  getSeekers: async () => {
+    try {
+      const response = await api.get('/api/admin/seekers');
+      return response.data;
     } catch (error) {
       throw handleApiError(error);
     }

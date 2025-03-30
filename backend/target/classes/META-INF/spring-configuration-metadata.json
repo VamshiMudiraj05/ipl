@@ -45,7 +45,8 @@
     {
       "name": "cloudinary.max-size",
       "type": "java.lang.Long",
-      "sourceType": "com.pgmadeeazy.properties.CloudinaryProperties"
+      "sourceType": "com.pgmadeeazy.properties.CloudinaryProperties",
+      "defaultValue": 0
     },
     {
       "name": "jwt.expiration",

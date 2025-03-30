@@ -6,13 +6,10 @@ import { ArrowLeft, ArrowRight, Check, Home, Building } from "lucide-react";
 // Seeker Components
 import SeekerPersonalDetails from "../components/registration/seeker/PersonalDetails";
 import SeekerOccupationDetails from "../components/registration/seeker/OccupationDetails";
-import SeekerAccommodationPreferences from "../components/registration/seeker/AccommodationPreferences";
 import SeekerVerification from "../components/registration/seeker/Verification";
 
 // Provider Components
 import ProviderPersonalDetails from "../components/registration/provider/PersonalDetails";
-import ProviderPropertyDetails from "../components/registration/provider/PropertyDetails";
-import ProviderPreferencesAndRules from "../components/registration/provider/PreferencesAndRules";
 import ProviderVerification from "../components/registration/provider/Verification";
 
 const MultiStepRegistration = () => {
@@ -45,28 +42,6 @@ const MultiStepRegistration = () => {
     workExperience: "",
     officeAddress: "",
     workId: "",
-    // Accommodation preferences
-    budgetMin: "",
-    budgetMax: "",
-    roomType: "",
-    genderPreference: "",
-    foodPreference: "",
-    amenities: [],
-
-    // Provider specific fields
-    pgName: "",
-    pgAddress: "",
-    availableRooms: "",
-    hasSingleRooms: false,
-    hasSharedRooms: false,
-    rentMin: "",
-    rentMax: "",
-    amenities: [],
-    preferredTenants: "",
-    depositAmount: "",
-    noticePeriod: "",
-    houseRules: [],
-    additionalRules: "",
 
     // Verification fields (Common)
     govtIdType: "",
@@ -83,7 +58,7 @@ const MultiStepRegistration = () => {
   const [message, setMessage] = useState("");
 
   // Calculate total steps based on user type
-  const totalSteps = userType ? 5 : 1;
+  const totalSteps = userType ? 4 : 1;
 
   // Calculate progress percentage
   const calculateProgress = () => {
@@ -172,35 +147,10 @@ const MultiStepRegistration = () => {
           if (!formData.workExperience) newErrors.workExperience = "Work experience is required";
           if (!formData.officeAddress.trim()) newErrors.officeAddress = "Office address is required";
         }
-      } else if (userType === "provider") {
-        if (!formData.pgName.trim()) newErrors.pgName = "PG name is required";
-        if (!formData.pgAddress.trim()) newErrors.pgAddress = "PG address is required";
-        if (!formData.availableRooms) newErrors.availableRooms = "Number of rooms is required";
-        if (!formData.hasSingleRooms && !formData.hasSharedRooms) {
-          newErrors.roomTypes = "Select at least one room type";
-        }
-        if (!formData.rentMin || !formData.rentMax) {
-          newErrors.rent = "Rent range is required";
-        }
       }
     }
 
     if (step === 4) {
-      if (userType === "seeker") {
-        if (!formData.budgetMin || !formData.budgetMax) newErrors.budget = "Budget range is required";
-        if (!formData.roomType) newErrors.roomType = "Room type is required";
-        if (!formData.genderPreference) newErrors.genderPreference = "Gender preference is required";
-        if (!formData.foodPreference) newErrors.foodPreference = "Food preference is required";
-        if (!formData.amenities.length) newErrors.amenities = "Select at least one amenity";
-      } else if (userType === "provider") {
-        if (!formData.preferredTenants) newErrors.preferredTenants = "Preferred tenants is required";
-        if (!formData.genderPreference) newErrors.genderPreference = "Gender preference is required";
-        if (!formData.depositAmount) newErrors.depositAmount = "Security deposit amount is required";
-        if (!formData.houseRules.length) newErrors.houseRules = "Select at least one house rule";
-      }
-    }
-
-    if (step === 5) {
       // Verification step validation
       if (!formData.govtIdType) newErrors.govtIdType = "Government ID type is required";
       if (!formData.govtIdNumber) newErrors.govtIdNumber = "Government ID number is required";
@@ -292,33 +242,25 @@ const MultiStepRegistration = () => {
       case 1:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Choose Your Role</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="text-xl font-semibold text-white">Choose Your Account Type</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <button
                 type="button"
                 onClick={() => handleUserTypeChange("seeker")}
-                className={`p-6 rounded-lg border transition-all duration-300 flex flex-col items-center gap-4 ${
-                  userType === "seeker"
-                    ? "border-orange-500 bg-black/90 text-white"
-                    : "border-gray-800 bg-black/70 text-gray-400 hover:border-orange-500 hover:text-white"
-                }`}
+                className="flex flex-col items-center justify-center p-6 rounded-lg border border-gray-800 hover:border-orange-500 transition-all duration-300"
               >
-                <Home className="w-12 h-12" />
-                <span className="text-lg font-medium">PG Seeker</span>
-                <p className="text-sm text-center">Looking for a PG accommodation</p>
+                <Home className="w-12 h-12 text-orange-500 mb-4" />
+                <span className="text-white font-medium">Seeker</span>
+                <span className="text-gray-400 text-sm mt-2">Looking for PG accommodation</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleUserTypeChange("provider")}
-                className={`p-6 rounded-lg border transition-all duration-300 flex flex-col items-center gap-4 ${
-                  userType === "provider"
-                    ? "border-orange-500 bg-black/90 text-white"
-                    : "border-gray-800 bg-black/70 text-gray-400 hover:border-orange-500 hover:text-white"
-                }`}
+                className="flex flex-col items-center justify-center p-6 rounded-lg border border-gray-800 hover:border-orange-500 transition-all duration-300"
               >
-                <Building className="w-12 h-12" />
-                <span className="text-lg font-medium">PG Provider</span>
-                <p className="text-sm text-center">Want to list your property</p>
+                <Building className="w-12 h-12 text-orange-500 mb-4" />
+                <span className="text-white font-medium">Provider</span>
+                <span className="text-gray-400 text-sm mt-2">Want to list your PG</span>
               </button>
             </div>
           </div>
@@ -333,20 +275,12 @@ const MultiStepRegistration = () => {
         return userType === "seeker" ? (
           <SeekerOccupationDetails formData={formData} handleChange={handleChange} errors={errors} />
         ) : (
-          <ProviderPropertyDetails formData={formData} handleChange={handleChange} errors={errors} />
+          <ProviderVerification formData={formData} handleChange={handleChange} errors={errors} />
         );
       case 4:
         return userType === "seeker" ? (
-          <SeekerAccommodationPreferences formData={formData} handleChange={handleChange} errors={errors} />
-        ) : (
-          <ProviderPreferencesAndRules formData={formData} handleChange={handleChange} errors={errors} />
-        );
-      case 5:
-        return userType === "seeker" ? (
           <SeekerVerification formData={formData} handleChange={handleChange} errors={errors} />
-        ) : (
-          <ProviderVerification formData={formData} handleChange={handleChange} errors={errors} />
-        );
+        ) : null;
       default:
         return null;
     }

@@ -141,4 +141,63 @@ public class PropertyController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<Property>> getPendingProperties() {
+        try {
+            logger.info("Fetching pending properties");
+            List<Property> properties = propertyService.getPendingProperties();
+            logger.info("Found {} pending properties", properties.size());
+            return ResponseEntity.ok(properties);
+        } catch (Exception e) {
+            logger.error("Error fetching pending properties", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch pending properties");
+        }
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<List<Property>> getApprovedProperties() {
+        List<Property> properties = propertyService.getApprovedProperties();
+        return ResponseEntity.ok(properties);
+    }
+
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<Property> approveProperty(
+            @PathVariable String id,
+            @RequestPart("approvalNote") String approvalNote) {
+        try {
+            Property approvedProperty = propertyService.approveProperty(id, "Admin", approvalNote);
+            return ResponseEntity.ok(approvedProperty);
+        } catch (PropertyNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<Property> rejectProperty(
+            @PathVariable String id,
+            @RequestPart("rejectionReason") String rejectionReason) {
+        try {
+            Property rejectedProperty = propertyService.rejectProperty(id, rejectionReason);
+            return ResponseEntity.ok(rejectedProperty);
+        } catch (PropertyNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @GetMapping("/owner/{ownerName}")
+    public ResponseEntity<List<Property>> getPropertiesByOwner(@PathVariable String ownerName) {
+        List<Property> properties = propertyService.getPropertiesByOwner(ownerName);
+        return ResponseEntity.ok(properties);
+    }
+
+    @GetMapping("/owner/email/{ownerEmail}")
+    public ResponseEntity<List<Property>> getPropertiesByOwnerEmail(@PathVariable String ownerEmail) {
+        List<Property> properties = propertyService.getPropertiesByOwnerEmail(ownerEmail);
+        return ResponseEntity.ok(properties);
+    }
 }
