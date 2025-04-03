@@ -82,6 +82,9 @@ public class Property {
     private List<String> rules;
 
     @Field
+    private String ownerId;
+
+    @Field
     private String ownerName;
 
     @Field

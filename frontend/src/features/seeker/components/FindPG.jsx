@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Users, DollarSign, Building, Phone, Mail, Clock, User, Search, ArrowLeft } from 'lucide-react';
 import { propertyApi } from '../../../services/api';
 import { toast } from 'react-hot-toast';
+import PropertyDetails from './PropertyDetails';
 
 const FindPG = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const FindPG = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [selectedProperty, setSelectedProperty] = useState(null);
 
   useEffect(() => {
     fetchApprovedProperties();
@@ -147,7 +149,8 @@ const FindPG = () => {
             {filteredProperties.map((property) => (
               <div
                 key={property.id}
-                className="bg-black/80 rounded-xl overflow-hidden border border-orange-600 hover:shadow-orange-500/20 transition-shadow duration-300"
+                onClick={() => setSelectedProperty(property)}
+                className="bg-black/80 rounded-xl overflow-hidden border border-orange-600 hover:shadow-orange-500/20 transition-shadow duration-300 cursor-pointer"
               >
                 {/* Image Carousel */}
                 <div className="relative aspect-[4/3]">
@@ -161,13 +164,19 @@ const FindPG = () => {
                       {property.images.length > 1 && (
                         <>
                           <button
-                            onClick={() => prevImage(property.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              prevImage(property.id);
+                            }}
                             className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
                           >
                             ←
                           </button>
                           <button
-                            onClick={() => nextImage(property.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              nextImage(property.id);
+                            }}
                             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
                           >
                             →
@@ -234,17 +243,28 @@ const FindPG = () => {
                     </div>
                   </div>
 
-                  {/* Contact Button */}
+                  {/* View Details Button */}
                   <button
-                    onClick={() => window.location.href = `mailto:${property.ownerEmail}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedProperty(property);
+                    }}
                     className="w-full mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-500 transition-colors"
                   >
-                    Contact Owner
+                    View Details
                   </button>
                 </div>
               </div>
             ))}
           </div>
+        )}
+
+        {/* Property Details Modal */}
+        {selectedProperty && (
+          <PropertyDetails
+            property={selectedProperty}
+            onClose={() => setSelectedProperty(null)}
+          />
         )}
       </div>
     </div>

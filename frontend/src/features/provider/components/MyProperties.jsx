@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Edit, Trash2, Plus } from 'lucide-react';
+import { Building2, Edit, Trash2, Plus, ArrowLeft, MapPin, Users, DollarSign } from 'lucide-react';
 import { propertyApi } from '../../../services/api';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
@@ -9,6 +9,8 @@ const MyProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingProperty, setEditingProperty] = useState(null);
+  const [editForm, setEditForm] = useState({});
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -42,8 +44,97 @@ const MyProperties = () => {
     }
   };
 
-  const handleEdit = (propertyId) => {
-    navigate(`/provider-dashboard/edit-property/${propertyId}`);
+  const handleEdit = (property) => {
+    setEditingProperty(property.id);
+    setEditForm({
+      name: property.name,
+      city: property.city,
+      area: property.area,
+      rent: property.rent,
+      rooms: property.rooms,
+      buildingType: property.buildingType,
+      deposit: property.deposit,
+      ownerName: property.ownerName,
+      ownerPhone: property.ownerPhone,
+      ownerEmail: property.ownerEmail,
+      amenities: property.amenities || [],
+      rules: property.rules || []
+    });
+  };
+
+  const validateForm = () => {
+    const requiredFields = ['name', 'city', 'area', 'rent', 'rooms', 'buildingType'];
+    
+    // Validate required fields
+    for (const field of requiredFields) {
+      if (!editForm[field] || editForm[field].toString().trim() === '') {
+        toast.error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        return false;
+      }
+    }
+    
+    // Validate numeric fields
+    const numericFields = ['rent', 'rooms', 'deposit'];
+    for (const field of numericFields) {
+      if (editForm[field] && isNaN(Number(editForm[field]))) {
+        toast.error(`${field.replace(/([A-Z])/g, ' $1').toLowerCase()} must be a number`);
+        return false;
+      }
+    }
+    
+    // Validate phone number format
+    if (editForm.ownerPhone && !/^[0-9]{10}$/.test(editForm.ownerPhone)) {
+      toast.error('Phone number must be 10 digits');
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSave = async (propertyId) => {
+    if (!validateForm()) return;
+    
+    try {
+      // Create FormData and append property as JSON string
+      const formData = new FormData();
+      formData.append('property', JSON.stringify(editForm));
+      
+      await propertyApi.updateProperty(propertyId, formData);
+      toast.success('Property updated successfully');
+      loadProperties();
+      setEditingProperty(null);
+      setEditForm({});
+    } catch (error) {
+      toast.error('Failed to update property');
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingProperty(null);
+    setEditForm({});
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    
+    // Handle checkbox inputs (amenities and rules)
+    if (type === 'checkbox') {
+      setEditForm(prev => {
+        const currentArray = prev[name] || [];
+        return {
+          ...prev,
+          [name]: checked 
+            ? [...currentArray, value]
+            : currentArray.filter(item => item !== value)
+        };
+      });
+    } else {
+      // Handle other inputs
+      setEditForm(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleDelete = async (propertyId) => {
@@ -75,9 +166,20 @@ const MyProperties = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black pb-0">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
+          {/* Back Navigation */}
+          <div className="flex items-center mb-6">
+            <button
+              onClick={() => navigate('/provider-dashboard')}
+              className="flex items-center text-white hover:text-orange-500 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to Dashboard
+            </button>
+          </div>
+
           {/* Header Section */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-white">My Properties</h1>
@@ -91,30 +193,242 @@ const MyProperties = () => {
           </div>
 
           {/* Properties Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-0">
             {properties.map((property) => (
               <div
                 key={property.id}
                 className="bg-black/80 p-6 rounded-xl shadow-xl border border-orange-600 hover:shadow-orange-500/20 transition-shadow duration-300"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <Building2 className="h-6 w-6 text-orange-500" />
-                  <h2 className="text-xl font-semibold text-white">
-                    {property.name}
-                  </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Building2 className="h-6 w-6 text-orange-500" />
+                    {editingProperty === property.id ? (
+                      <input
+                        type="text"
+                        name="name"
+                        value={editForm.name}
+                        onChange={handleInputChange}
+                        className="bg-black/50 border border-orange-600 rounded px-3 py-1 text-white text-xl font-semibold"
+                        required
+                      />
+                    ) : (
+                      <h2 className="text-xl font-semibold text-white">
+                        {property.name}
+                      </h2>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {editingProperty === property.id ? (
+                      <>
+                        <button
+                          onClick={() => handleSave(property.id)}
+                          className="p-2 text-green-500 hover:text-green-600 transition-colors duration-300"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          className="p-2 text-red-500 hover:text-red-600 transition-colors duration-300"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => handleEdit(property)}
+                        className="p-2 text-orange-500 hover:text-orange-600 transition-colors duration-300"
+                      >
+                        <Edit className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="space-y-2 mb-4">
-                  <p className="text-gray-300">
-                    <span className="font-medium">Location:</span> {property.city}
-                  </p>
-                  <p className="text-gray-300">
-                    <span className="font-medium">Price:</span> ₹{property.price}
-                  </p>
-                  <p className="text-gray-300">
-                    <span className="font-medium">Capacity:</span>{' '}
-                    {property.capacity} beds
-                  </p>
+                {/* Property Image */}
+                <div className="h-48 overflow-hidden mb-4">
+                  <img
+                    src={property.images?.[0] || 'https://via.placeholder.com/400x300'}
+                    alt={property.name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center text-gray-300">
+                    <MapPin className="w-5 h-5 mr-2 text-orange-500" />
+                    {editingProperty === property.id ? (
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          name="city"
+                          value={editForm.city}
+                          onChange={handleInputChange}
+                          className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white w-24"
+                          placeholder="City"
+                        />
+                        <input
+                          type="text"
+                          name="area"
+                          value={editForm.area}
+                          onChange={handleInputChange}
+                          className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white w-24"
+                          placeholder="Area"
+                        />
+                      </div>
+                    ) : (
+                      <span>{property.city}, {property.area} sq ft</span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <DollarSign className="w-5 h-5 mr-2 text-orange-500" />
+                    {editingProperty === property.id ? (
+                      <input
+                        type="number"
+                        name="rent"
+                        value={editForm.rent}
+                        onChange={handleInputChange}
+                        className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white w-32"
+                        placeholder="Rent"
+                      />
+                    ) : (
+                      <span>₹{property.rent}/month</span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <Users className="w-5 h-5 mr-2 text-orange-500" />
+                    {editingProperty === property.id ? (
+                      <input
+                        type="number"
+                        name="rooms"
+                        value={editForm.rooms}
+                        onChange={handleInputChange}
+                        className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white w-24"
+                        placeholder="Rooms"
+                      />
+                    ) : (
+                      <span>{property.rooms} rooms</span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <Building2 className="w-5 h-5 mr-2 text-orange-500" />
+                    {editingProperty === property.id ? (
+                      <input
+                        type="text"
+                        name="buildingType"
+                        value={editForm.buildingType}
+                        onChange={handleInputChange}
+                        className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white w-32"
+                        placeholder="Building Type"
+                      />
+                    ) : (
+                      <span>{property.buildingType}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <DollarSign className="w-5 h-5 mr-2 text-orange-500" />
+                    {editingProperty === property.id ? (
+                      <input
+                        type="number"
+                        name="deposit"
+                        value={editForm.deposit}
+                        onChange={handleInputChange}
+                        className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white w-32"
+                        placeholder="Deposit"
+                      />
+                    ) : (
+                      <span>Deposit: ₹{property.deposit}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Amenities */}
+                {property.amenities && property.amenities.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-white font-semibold mb-2">Amenities</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {property.amenities.map((amenity, index) => (
+                        <span
+                          key={index}
+                          className="bg-orange-600/20 text-orange-500 px-3 py-1 rounded-full text-sm"
+                        >
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Owner Details */}
+                <div className="mb-4">
+                  <h3 className="text-white font-semibold mb-2">Owner Details</h3>
+                  <div className="space-y-2 text-gray-300 text-sm">
+                    {editingProperty === property.id ? (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <span className="w-16">Name:</span>
+                          <input
+                            type="text"
+                            name="ownerName"
+                            value={editForm.ownerName}
+                            onChange={handleInputChange}
+                            className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white flex-1"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-16">Phone:</span>
+                          <input
+                            type="text"
+                            name="ownerPhone"
+                            value={editForm.ownerPhone}
+                            onChange={handleInputChange}
+                            className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white flex-1"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="w-16">Email:</span>
+                          <input
+                            type="email"
+                            name="ownerEmail"
+                            value={editForm.ownerEmail}
+                            onChange={handleInputChange}
+                            className="bg-black/50 border border-orange-600 rounded px-2 py-1 text-white flex-1"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p>Name: {property.ownerName}</p>
+                        <p>Phone: {property.ownerPhone}</p>
+                        <p>Email: {property.ownerEmail}</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Rules */}
+                <div className="mb-4">
+                  <h3 className="text-white font-semibold mb-2">Rules</h3>
+                  {editingProperty === property.id ? (
+                    <textarea
+                      name="rules"
+                      value={editForm.rules.join('\n')}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        rules: e.target.value.split('\n').filter(rule => rule.trim() !== '')
+                      }))}
+                      className="w-full bg-black/50 border border-orange-600 rounded px-2 py-1 text-white text-sm"
+                      placeholder="Enter rules (one per line)"
+                      rows="4"
+                    />
+                  ) : (
+                    property.rules && property.rules.length > 0 && (
+                      <ul className="text-gray-300 text-sm list-disc list-inside">
+                        {property.rules.map((rule, index) => (
+                          <li key={index}>{rule}</li>
+                        ))}
+                      </ul>
+                    )
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -125,20 +439,12 @@ const MyProperties = () => {
                   >
                     {property.status}
                   </span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(property.id)}
-                      className="p-2 text-orange-500 hover:text-orange-600 transition-colors duration-300"
-                    >
-                      <Edit className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(property.id)}
-                      className="p-2 text-red-500 hover:text-red-600 transition-colors duration-300"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleDelete(property.id)}
+                    className="p-2 text-red-500 hover:text-red-600 transition-colors duration-300"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -163,4 +469,4 @@ const MyProperties = () => {
   );
 };
 
-export default MyProperties; 
+export default MyProperties;

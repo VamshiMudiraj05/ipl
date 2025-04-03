@@ -7,14 +7,20 @@ import ProtectedRoute from '../context/ProtectedRoute';
 import ProviderDashboard from '../features/provider/components/ProviderDashboard';
 import AddProperty from '../features/provider/components/AddProperty';
 import MyProperties from '../features/provider/components/MyProperties';
+import TenantsPage from '../features/provider/components/TenantsPage';
+import PaymentsPage from '../features/provider/components/PaymentsPage';
 import AdminDashboard from '../features/admin/components/AdminDashboard';
+import Profile from '../features/seeker/components/Profile';
 import PropertyApproval from '../features/admin/components/PropertyApproval';
 import RejectedProperties from '../features/admin/components/RejectedProperties';
 import AvailableProperties from '../features/admin/components/AvailableProperties';
 import Providers from '../features/admin/components/Providers';
 import Seekers from '../features/admin/components/Seekers';
-import SeekerDashboard from '../features/explorer/pages/SeekerDashboard';
+import SeekerDashboard from '../features/seeker/components/SeekerDashboard';
 import FindPG from '../features/seeker/components/FindPG';
+import MyBookings from '../features/seeker/components/MyBookings';
+import PayPalSuccess from '../features/seeker/components/PayPalSuccess';
+import PayPalCancel from '../features/seeker/components/PayPalCancel';
 
 const AppRoutes = () => {
   return (
@@ -38,14 +44,20 @@ const AppRoutes = () => {
 
       <Route path="/seeker-dashboard/bookings" element={
         <ProtectedRoute>
-          <div className="min-h-screen bg-black">
-            <div className="container mx-auto px-4 py-8">
-              <div className="max-w-4xl mx-auto bg-black/80 p-8 rounded-xl shadow-xl border border-orange-600">
-                <h1 className="text-3xl font-bold text-white mb-6">My Bookings</h1>
-                {/* Add your bookings content here */}
-              </div>
-            </div>
-          </div>
+          <MyBookings />
+        </ProtectedRoute>
+      } />
+
+      {/* PayPal Routes */}
+      <Route path="/seeker/paypal-success" element={
+        <ProtectedRoute>
+          <PayPalSuccess />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/seeker/paypal-cancel" element={
+        <ProtectedRoute>
+          <PayPalCancel />
         </ProtectedRoute>
       } />
 
@@ -64,14 +76,7 @@ const AppRoutes = () => {
 
       <Route path="/seeker-dashboard/profile" element={
         <ProtectedRoute>
-          <div className="min-h-screen bg-black">
-            <div className="container mx-auto px-4 py-8">
-              <div className="max-w-4xl mx-auto bg-black/80 p-8 rounded-xl shadow-xl border border-orange-600">
-                <h1 className="text-3xl font-bold text-white mb-6">My Profile</h1>
-                {/* Add your profile content here */}
-              </div>
-            </div>
-          </div>
+          <Profile />
         </ProtectedRoute>
       } />
 
@@ -101,9 +106,21 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
-      <Route path="/provider-dashboard/properties" element={
+      <Route path="/provider-dashboard/my-properties" element={
         <ProtectedRoute>
           <MyProperties />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/provider-dashboard/tenants" element={
+        <ProtectedRoute>
+          <TenantsPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/provider-dashboard/payments" element={
+        <ProtectedRoute>
+          <PaymentsPage />
         </ProtectedRoute>
       } />
 

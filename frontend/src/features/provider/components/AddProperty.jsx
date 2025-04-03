@@ -260,10 +260,11 @@ export default function AddProperty() {
       <div className="max-w-6xl mx-auto bg-black/80 rounded-xl p-8">
         <div className="flex items-center mb-8">
           <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-lg bg-black/50 hover:bg-black/70 text-orange-500"
+            onClick={() => navigate('/provider-dashboard')}
+            className="flex items-center text-white hover:text-orange-500 transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Dashboard
           </button>
           <h1 className="text-2xl font-bold text-white ml-4">Add New Property</h1>
         </div>

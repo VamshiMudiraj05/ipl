@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Mail, Lock } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
@@ -10,6 +10,39 @@ const SignInForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const userData = Cookies.get('user');
+    if (userData) {
+      const userDataObj = JSON.parse(userData);
+      // Redirect based on user type
+      switch(userDataObj.userType) {
+        case 'ROLE_ADMIN':
+          navigate('/admin-dashboard', { replace: true });
+          break;
+        case 'ROLE_PROVIDER':
+          navigate('/provider-dashboard', { replace: true });
+          break;
+        case 'ROLE_SEEKER':
+          navigate('/seeker-dashboard', { replace: true });
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Prevent back navigation when logged in
+    window.history.pushState(null, '', window.location.href);
+    const handlePopState = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,16 +92,16 @@ const SignInForm = () => {
         
         // Add a small delay before navigation for better UX
         setTimeout(() => {
-          // Redirect based on user type
+          // Redirect based on user type with replace: true to prevent back navigation
           switch(userDataObj.userType) {
             case 'ROLE_ADMIN':
-              navigate('/admin-dashboard');
+              navigate('/admin-dashboard', { replace: true });
               break;
             case 'ROLE_PROVIDER':
-              navigate('/provider-dashboard');
+              navigate('/provider-dashboard', { replace: true });
               break;
             case 'ROLE_SEEKER':
-              navigate('/seeker-dashboard');
+              navigate('/seeker-dashboard', { replace: true });
               break;
             default:
               throw new Error('Invalid user type');

@@ -15,4 +15,5 @@ public interface PropertyRepository extends MongoRepository<Property, String> {
     List<Property> findByCityAndAreaAndRentBetweenAndRoomsBetweenAndBuildingTypeAndCategory(String city, String area, Double minRent, Double maxRent, Integer minRooms, Integer maxRooms, String buildingType, String category);
     List<Property> findByOwnerName(String ownerName);
     List<Property> findByOwnerEmail(String ownerEmail);
+    List<Property> findByOwnerId(String ownerId);
 }

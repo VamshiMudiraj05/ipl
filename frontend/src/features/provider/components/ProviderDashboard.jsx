@@ -18,9 +18,8 @@ import { useAuth } from '../../../context/AuthContext';
 
 const menuItems = [
   { icon: Home, label: 'Dashboard', path: '/provider-dashboard' },
-  { icon: Building, label: 'My Properties', path: '/provider-dashboard/properties' },
+  { icon: Building, label: 'My Properties', path: '/provider-dashboard/my-properties' },
   { icon: Plus, label: 'Add New Property', path: '/provider-dashboard/add-property' },
-  { icon: User, label: 'My Bookings', path: '/provider-dashboard/bookings' },
   { icon: User, label: 'My Tenants', path: '/provider-dashboard/tenants' },
   { icon: DollarSign, label: 'Payments', path: '/provider-dashboard/payments' },
   { icon: ChartBar, label: 'Analytics', path: '/provider-dashboard/analytics' },
@@ -156,18 +155,17 @@ const ProviderDashboard = () => {
           <div className="bg-black/80 rounded-xl p-6">
             <h2 className="text-2xl font-bold text-white mb-6">Welcome to Provider Dashboard</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-black/50 p-6 rounded-lg border border-orange-600">
-                <h3 className="text-xl font-semibold text-white mb-2">Total Properties</h3>
-                <p className="text-3xl font-bold text-orange-500">{properties.length}</p>
-              </div>
-              <div className="bg-black/50 p-6 rounded-lg border border-orange-600">
-                <h3 className="text-xl font-semibold text-white mb-2">Active Bookings</h3>
-                <p className="text-3xl font-bold text-orange-500">0</p>
-              </div>
-              <div className="bg-black/50 p-6 rounded-lg border border-orange-600">
-                <h3 className="text-xl font-semibold text-white mb-2">Total Revenue</h3>
-                <p className="text-3xl font-bold text-orange-500">₹0</p>
-              </div>
+              {properties.map((property) => (
+                <div key={property.id} className="bg-black/50 p-6 rounded-lg border border-orange-600">
+                  <h3 className="text-xl font-semibold text-white mb-2">{property.name}</h3>
+                  <p className="text-sm text-gray-300">{property.city}, {property.area}</p>
+                  <p className="text-sm text-gray-300">₹{property.rent}/month</p>
+                  <p className="text-sm text-gray-300">{property.rooms} rooms</p>
+                  <button onClick={() => handleEdit(property.id)} className="mt-4 bg-orange-600 hover:bg-orange-500 text-white py-2 px-4 rounded transition">
+                    Edit
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -183,60 +181,12 @@ const ProviderDashboard = () => {
           <span className="text-white text-lg font-medium">Add New Property</span>
         </div>
 
-        <div className="container mx-auto px-4 py-8 mt-10">
-          <h2 className="text-2xl font-bold text-white mb-6">My Properties</h2>
-          
-          {properties.length === 0 ? (
-            <p className="text-gray-500 text-center">No properties found</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property) => (
-                <div key={property.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  {property.images && property.images.length > 0 && (
-                    <img
-                      src={property.images[0]}
-                      alt={property.name}
-                      className="w-full h-48 object-cover"
-                    />
-                  )}
+      
                   
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-semibold">{property.name}</h3>
-                      <span className={`px-2 py-1 rounded-full text-sm ${getStatusColor(property.approvalStatus)}`}>
-                        {property.approvalStatus}
-                      </span>
-                    </div>
-                    
-                    <p className="text-gray-600 mb-2">{property.city}, {property.area}</p>
-                    <p className="text-gray-600 mb-2">₹{property.rent}/month</p>
-                    <p className="text-gray-600 mb-4">{property.rooms} rooms</p>
-
-                    {property.approvalStatus === 'REJECTED' && property.rejectionReason && (
-                      <div className="bg-red-50 text-red-700 p-3 rounded mb-4">
-                        <p className="font-semibold">Rejection Reason:</p>
-                        <p>{property.rejectionReason}</p>
-                      </div>
-                    )}
-                    
-                    <div className="flex justify-between">
-                      <button
-                        onClick={() => handleEdit(property.id)}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                        disabled={property.approvalStatus === 'APPROVED'}
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
+
 };
 
 export default ProviderDashboard;

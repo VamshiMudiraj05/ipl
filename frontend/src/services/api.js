@@ -12,6 +12,9 @@ const api = axios.create({
   }
 });
 
+// Export the axios instance as default
+export default api;
+
 // Add request interceptor for authentication
 api.interceptors.request.use(
   (config) => {
@@ -225,6 +228,109 @@ export const adminApi = {
   }
 };
 
+// Booking API methods
+export const bookingApi = {
+  createBooking: async (bookingData) => {
+    const response = await api.post('/api/bookings', bookingData);
+    return response;
+  },
+
+  getSeekerBookings: async (seekerId) => {
+    try {
+      const response = await api.get(`/api/bookings/seeker/${seekerId}`);
+      
+      if (!response || !response.data) {
+        throw new Error('Invalid response format');
+      }
+
+      // Ensure we have an array of bookings
+      const bookings = Array.isArray(response.data) 
+        ? response.data 
+        : [response.data];
+
+      return bookings;
+    } catch (error) {
+      console.error('Error fetching seeker bookings:', error);
+      throw error;
+    }
+  },
+
+  getPropertyBookings: async (propertyId) => {
+    const response = await api.get(`/api/bookings/property/${propertyId}`);
+    return response.data;
+  },
+
+
+
+  getBookingById: async (bookingId) => {
+    const response = await api.get(`/api/bookings/${bookingId}`);
+    return response.data;
+  },
+
+  updateBookingStatus: async (bookingId, status) => {
+    try {
+      console.log('Updating booking status:', { bookingId, status });
+      const response = await api.put(`/api/bookings/${bookingId}/status?status=${status}`);
+      console.log('Booking status update response:', response);
+      return response.data;
+    } catch (error) {
+      console.error('Booking status update failed:', error);
+      throw error;
+    }
+  },
+
+  updatePaymentStatus: async (bookingId, status) => {
+    const response = await api.put(`/api/bookings/${bookingId}/payment-status?status=${status}`);
+    return response.data;
+  },
+
+  createPayment: async (paymentData) => {
+    const response = await api.post('/api/bookings/payments', paymentData);
+    return response.data;
+  },
+
+  getBookingPayments: async (bookingId) => {
+    const response = await api.get(`/api/bookings/payments/booking/${bookingId}`);
+    return response.data;
+  },
+
+  getSeekerPayments: async (seekerId) => {
+    const response = await api.get(`/api/bookings/payments/seeker/${seekerId}`);
+    return response.data;
+  },
+
+  updatePaymentStatus: async (paymentId, status) => {
+    const response = await api.put(`/api/bookings/payments/${paymentId}/status?status=${status}`);
+    return response.data;
+  },
+
+  createPayPalPayment: async (paymentData) => {
+    try {
+      console.log('Creating PayPal payment with data:', paymentData);
+      const response = await api.post('/api/bookings/payments/paypal', paymentData);
+      console.log('PayPal payment response:', response);
+      return response;
+    } catch (error) {
+      console.error('PayPal payment creation failed:', error);
+      throw error;
+    }
+  },
+
+  executePayPalPayment: async (paymentId, PayerID) => {
+    try {
+      console.log('Executing PayPal payment:', { paymentId, PayerID });
+      const response = await api.get(`/api/bookings/payments/paypal/success`, {
+        params: { paymentId, PayerID }
+      });
+      console.log('PayPal payment execution response:', response);
+      return response.data;
+    } catch (error) {
+      console.error('PayPal payment execution failed:', error);
+      throw error;
+    }
+  }
+};
+
 // Error handling helper
 const handleApiError = (error) => {
   if (error.response) {
@@ -239,4 +345,4 @@ const handleApiError = (error) => {
     // Something happened in setting up the request that triggered an Error
     return new Error('Error setting up the request');
   }
-}; 
+};

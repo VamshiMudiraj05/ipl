@@ -48,11 +48,11 @@ public class AuthController {
             if (userData instanceof Seeker seeker) {
                 seeker.setPassword(passwordEncoder.encode(seeker.getPassword()));
                 seekerRepository.save(seeker);
-                return ResponseEntity.ok().body("Seeker registered successfully");
+                return ResponseEntity.status(HttpStatus.CREATED).body("Seeker registered successfully");
             } else if (userData instanceof Provider provider) {
                 provider.setPassword(passwordEncoder.encode(provider.getPassword()));
                 providerRepository.save(provider);
-                return ResponseEntity.ok().body("Provider registered successfully");
+                return ResponseEntity.status(HttpStatus.CREATED).body("Provider registered successfully");
             }
             return ResponseEntity.badRequest().body("Invalid user type");
         } catch (Exception e) {

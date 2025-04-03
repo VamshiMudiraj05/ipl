@@ -20,7 +20,7 @@ public class RegistrationController {
     public ResponseEntity<?> registerSeeker(@RequestBody Seeker seeker, BindingResult bindingResult) {
         try {
             Seeker registeredSeeker = registrationService.registerSeeker(seeker, bindingResult);
-            return ResponseEntity.ok(registeredSeeker);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredSeeker);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -30,7 +30,7 @@ public class RegistrationController {
     public ResponseEntity<?> registerProvider(@RequestBody Provider provider, BindingResult bindingResult) {
         try {
             Provider registeredProvider = registrationService.registerProvider(provider, bindingResult);
-            return ResponseEntity.ok(registeredProvider);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredProvider);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
